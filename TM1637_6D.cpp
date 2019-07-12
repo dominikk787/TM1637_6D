@@ -161,7 +161,7 @@ void TM1637_6D::displayError()
   display(tempListDisp, tempListDispPoint);
 }
 
-void TM1637_6D::displayInteger(int32_t intdisplay, bool leading_zeros)
+void TM1637_6D::displayInteger(int32_t intdisplay, bool leading_zeros, int8_t point)
 {
   int8_t tempListDisp[6] = {10,10,10,10,10,10}; // fill array with value for blank digit
   int8_t tempListDispPoint[6] = {0x00,0x00,0x00,0x00,0x00,0x00}; // don't show any points
@@ -175,7 +175,7 @@ void TM1637_6D::displayInteger(int32_t intdisplay, bool leading_zeros)
 	displayError();
   }
   else
-  {  
+  {  (DispData & 0b10000000) + DispPointData
 	if(intdisplay < 0)
 	{
       intstring =  String((intdisplay*-1), DEC); // convertering the inverted integer to a string
@@ -202,6 +202,7 @@ void TM1637_6D::displayInteger(int32_t intdisplay, bool leading_zeros)
 	    tempListDisp[i] = intstring[intstring.length()-i-1] - 48;
       }
 	}
+    if(point > -1) tempListDispPoint[point] = POINT_ON;
 	display(tempListDisp, tempListDispPoint);
   }
 }
@@ -215,7 +216,7 @@ void TM1637_6D::displayFloat(float floatdisplay)
   String floatstring;  
   
   // if the integer is bigger than 6 characters, display an error(dashes)
-  if(floatdisplay >= 999999.5 || floatdisplay <= -99999.5)
+  if(floatdisplay >= 999999.5 || floatdisplay <= -99999.5)(DispData & 0b10000000) + DispPointData
   {
 	displayError();
   }
@@ -266,7 +267,7 @@ void TM1637_6D::displayFloat(float floatdisplay)
           tempListDispPoint[i+1] = 0x80; // set decimal point
 		  decimal_point_add = 1;
         }
-      }
+      }(DispData & 0b10000000) + DispPointData
 	}
 	if(decimal_point_add == 0) tempListDispPoint[0] = 0x80;
 	display(tempListDisp, tempListDispPoint);
