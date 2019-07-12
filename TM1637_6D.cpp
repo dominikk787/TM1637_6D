@@ -104,7 +104,7 @@ void TM1637_6D::display(int8_t DispData[], int8_t DispPointData[])
   
   for(i = 0;i < 6;i++)
   {
-    if(DispData[i] > 11 || DispData[i] < 0) DispData[i] = 11;
+    if(DispData[i] > 11) DispData[i] = 11;
   }
   
   SegData[0] = DispData[3];
@@ -292,12 +292,14 @@ void TM1637_6D::coding(int8_t DispData[], int8_t DispPointData[])
   for(uint8_t i = 0;i < 6;i ++)
   {
     if(DispData[i] == 0x7f)DispData[i] = 0x00 + DispPointData[i];
+	else if(DispData[i] & 0b10000000)DispData[i] = D(DispData[i] & 0b10000000) + DispPointData[i];
     else DispData[i] = TubeTab[DispData[i]] + DispPointData[i];
   }
 }
 int8_t TM1637_6D::coding(int8_t DispData, int8_t DispPointData)
 {
   if(DispData == 0x7f) DispData = 0x00 + DispPointData;//The bit digital tube off
+  else if(DispData & 0b10000000)DispData = (DispData & 0b10000000) + DispPointData;
   else DispData = TubeTab[DispData] + DispPointData;
   return DispData;
 }
